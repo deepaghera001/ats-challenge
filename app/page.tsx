@@ -107,6 +107,8 @@ export default function AssessAIPage() {
             questions={questions} 
             onComplete={handleInterviewComplete} 
             isLoadingNextStep={isLoading}
+            jobDescription={jobDescription}
+            cv={cv}
           />
         )}
 

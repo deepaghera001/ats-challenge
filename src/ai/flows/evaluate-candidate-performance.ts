@@ -27,6 +27,11 @@ export type EvaluateCandidatePerformanceInput = z.infer<typeof EvaluateCandidate
 
 const EvaluateCandidatePerformanceOutputSchema = z.object({
   overallScore: z.number().describe('The overall performance score of the candidate (0-100).'),
+  technicalAcumen: z.number().describe('Technical skills assessment score (0-100)'),
+  communicationSkills: z.number().describe('Communication ability score (0-100)'),
+  responsivenessAgility: z.number().describe('Response quality and speed score (0-100)'),
+  problemSolvingAdaptability: z.number().describe('Problem-solving capability score (0-100)'),
+  culturalFitSoftSkills: z.number().describe('Cultural alignment and soft skills score (0-100)'),
   strengths: z.string().describe('A summary of the candidate\u2019s strengths based on their answers.'),
   weaknesses: z.string().describe('A summary of the candidate\u2019s weaknesses based on their answers.'),
   areasForImprovement: z.string().describe('Suggested areas for improvement for the candidate.'),
@@ -42,7 +47,17 @@ const evaluateCandidatePerformancePrompt = ai.definePrompt({
   name: 'evaluateCandidatePerformancePrompt',
   input: {schema: EvaluateCandidatePerformanceInputSchema},
   output: {schema: EvaluateCandidatePerformanceOutputSchema},
-  prompt: `You are an expert recruiter evaluating candidate performance based on their interview answers and response times.
+  // Modified prompt section
+  prompt: `You are an expert recruiter evaluating candidate performance...
+  Evaluate the candidate based on:
+  - Technical Acumen (0-100): ... 
+  - Communication Skills (0-100): ...
+  ...
+  
+  Provide scores in format:
+  Technical Acumen: [score]
+  Communication Skills: [score]
+  ...
 
   Job Description: {{{jobDescription}}}
   Candidate CV: {{{candidateCv}}}
@@ -54,8 +69,11 @@ const evaluateCandidatePerformancePrompt = ai.definePrompt({
   {{/each}}
 
   Evaluate the candidate based on the following criteria:
-  - Answer Quality: How well the candidate addressed the question, clarity, relevance, and depth of the answer.
-  - Response Time: How quickly the candidate responded to the question. Shorter response times are generally better, but consider the complexity of the question.
+  - Technical Acumen: Evaluation of the candidate's technical skills as evidenced in their responses. Score: 0-100
+  - Communication Skills: Clarity, coherence, and effectiveness in conveying ideas. Score: 0-100
+  - Responsiveness & Agility: Assess how promptly and thoughtfully the candidate responds. Faster, well-considered responses should be scored higher, but consider the complexity of the question. Score: 0-100
+  - Problem-Solving & Adaptability: Ability to handle follow-up questions and provide relevant clarifications. Score: 0-100
+  - Cultural Fit & Soft Skills: Evaluation of interpersonal communication and potential fit for the company culture. Score: 0-100
 
   Provide the following in your evaluation:
   - Overall Score (0-100): A numerical score representing the candidate\u2019s overall performance.

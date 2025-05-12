@@ -8,4 +8,15 @@ export interface InterviewEntry {
   responseTimeSeconds: number;
 }
 
-export interface PerformanceEvaluationResult extends EvaluateCandidatePerformanceOutput {}
+export interface PerformanceEvaluationResult extends EvaluateCandidatePerformanceOutput {
+  technicalAcumen: number;
+  communicationSkills: number;
+  responsivenessAgility: number;
+  culturalFitSoftSkills: number;
+  problemSolvingAdaptability: number;
+  overallScore: number;
+  strengths: string;
+  weaknesses: string;
+  areasForImprovement: string;
+  detailedFeedback: string;
+}

@@ -46,6 +46,11 @@ export async function handleEvaluatePerformanceAction(
     // Provide a fallback/error structure for evaluation
     return {
         overallScore: 0,
+        technicalAcumen: 0,
+        communicationSkills: 0,
+        responsivenessAgility: 0,
+        problemSolvingAdaptability: 0,
+        culturalFitSoftSkills: 0,
         strengths: "Could not determine due to an error.",
         weaknesses: "Could not determine due to an error.",
         areasForImprovement: "Could not determine due to an error.",

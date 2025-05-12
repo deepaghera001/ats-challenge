@@ -53,7 +53,7 @@ CV: {{{cv}}}
 
 Consider the skills and experience outlined in the CV in relation to the job description. Tailor the questions to assess the candidate's suitability for the role.
 
-Output the interview questions as a JSON array of strings.
+Output the interview 3 questions as a JSON array of strings.
 `,
 });
 

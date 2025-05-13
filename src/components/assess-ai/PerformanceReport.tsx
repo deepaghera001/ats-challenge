@@ -87,6 +87,27 @@ export function PerformanceReport({ report, onRestart }: PerformanceReportProps)
             <Progress value={culturalFitSoftSkills} className="h-3" />
             <p className="text-sm text-muted-foreground mt-1">{culturalFitSoftSkills}/100</p>
           </div>
+          <div className="p-4 border rounded-md md:col-span-2">
+            <h3 className="font-semibold mb-2">Response Time Metrics</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Average: </span>
+                <span className="font-medium">{report.responseTimeMetrics.average}s</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Fastest: </span>
+                <span className="font-medium">{report.responseTimeMetrics.min}s</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Slowest: </span>
+                <span className="font-medium">{report.responseTimeMetrics.max}s</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Questions: </span>
+                <span className="font-medium">{report.responseTimeMetrics.totalQuestions}</span>
+              </div>
+            </div>
+          </div>
         </div>
   
         <Accordion type="single" collapsible className="w-full">

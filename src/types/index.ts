@@ -13,6 +13,12 @@ export interface PerformanceEvaluationResult extends EvaluateCandidatePerformanc
   communicationSkills: number;
   responsivenessAgility: number;
   culturalFitSoftSkills: number;
+  responseTimeMetrics: {
+    average: number;
+    min: number;
+    max: number;
+    totalQuestions: number;
+  };
   problemSolvingAdaptability: number;
   overallScore: number;
   strengths: string;

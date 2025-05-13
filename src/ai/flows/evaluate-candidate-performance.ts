@@ -32,6 +32,12 @@ const EvaluateCandidatePerformanceOutputSchema = z.object({
   responsivenessAgility: z.number().describe('Response quality and speed score (0-100)'),
   problemSolvingAdaptability: z.number().describe('Problem-solving capability score (0-100)'),
   culturalFitSoftSkills: z.number().describe('Cultural alignment and soft skills score (0-100)'),
+  responseTimeMetrics: z.object({
+    average: z.number().describe('Average response time in seconds'),
+    min: z.number().describe('Fastest response time in seconds'),
+    max: z.number().describe('Slowest response time in seconds'),
+    totalQuestions: z.number().describe('Total number of questions answered')
+  }).describe('Detailed response time metrics'),
   strengths: z.string().describe('A summary of the candidate\u2019s strengths based on their answers.'),
   weaknesses: z.string().describe('A summary of the candidate\u2019s weaknesses based on their answers.'),
   areasForImprovement: z.string().describe('Suggested areas for improvement for the candidate.'),
@@ -43,9 +49,18 @@ export async function evaluateCandidatePerformance(input: EvaluateCandidatePerfo
   return evaluateCandidatePerformanceFlow(input);
 }
 
+const EvaluateCandidatePerformancePromptInputSchema = EvaluateCandidatePerformanceInputSchema.extend({
+  responseTimeMetrics: z.object({
+    average: z.number(),
+    min: z.number(),
+    max: z.number(),
+    totalQuestions: z.number()
+  })
+});
+
 const evaluateCandidatePerformancePrompt = ai.definePrompt({
   name: 'evaluateCandidatePerformancePrompt',
-  input: {schema: EvaluateCandidatePerformanceInputSchema},
+  input: {schema: EvaluateCandidatePerformancePromptInputSchema},
   output: {schema: EvaluateCandidatePerformanceOutputSchema},
   // Modified prompt section
   prompt: `You are an expert recruiter evaluating candidate performance...
@@ -71,11 +86,16 @@ const evaluateCandidatePerformancePrompt = ai.definePrompt({
   Evaluate the candidate based on the following criteria:
   - Technical Acumen: Evaluation of the candidate's technical skills as evidenced in their responses. Score: 0-100
   - Communication Skills: Clarity, coherence, and effectiveness in conveying ideas. Score: 0-100
-  - Responsiveness & Agility: Assess how promptly and thoughtfully the candidate responds. Faster, well-considered responses should be scored higher, but consider the complexity of the question. Score: 0-100
+  - Responsiveness & Agility: Assess response timeliness using actual metrics (average: {{responseTimeMetrics.average}}s). Score 0-100 based on:
+    - Speed: Compare to expected times (<=30s excellent, 30-60s good, >60s needs improvement)
+    - Consistency: Evaluate variance between fastest ({{responseTimeMetrics.min}}s) and slowest ({{responseTimeMetrics.max}}s) responses
+    - Complexity Adjustment: Longer times acceptable for technical/leadership questions
   - Problem-Solving & Adaptability: Ability to handle follow-up questions and provide relevant clarifications. Score: 0-100
   - Cultural Fit & Soft Skills: Evaluation of interpersonal communication and potential fit for the company culture. Score: 0-100
 
   Provide the following in your evaluation:
+  - Response Time Analysis: Include average/median response times
+  - Timing Score Contribution: Specify how timing affected overall score (20% weight)
   - Overall Score (0-100): A numerical score representing the candidate\u2019s overall performance.
   - Strengths: A summary of the candidate\u2019s strengths based on their answers.
   - Weaknesses: A summary of the candidate\u2019s weaknesses based on their answers.
@@ -92,7 +112,14 @@ const evaluateCandidatePerformanceFlow = ai.defineFlow(
     outputSchema: EvaluateCandidatePerformanceOutputSchema,
   },
   async input => {
-    const {output} = await evaluateCandidatePerformancePrompt(input);
+    const responseTimes = input.interviewAnswers.map(a => a.responseTimeSeconds);
+const responseTimeMetrics = {
+  average: Math.round(responseTimes.reduce((a,b) => a + b, 0) / responseTimes.length || 0),
+  min: Math.min(...responseTimes),
+  max: Math.max(...responseTimes),
+  totalQuestions: responseTimes.length
+};
+const {output} = await evaluateCandidatePerformancePrompt({...input, responseTimeMetrics});
     return output!;
   }
 );

@@ -29,14 +29,19 @@ const ACCEPTED_MIME_TYPES = [
 ];
 const MIN_CV_TEXT_LENGTH = 100; // Minimum characters for pasted CV
 
-// import pdfToText from "react-pdftotext";
-
 async function readFileAsText(file: File): Promise<string> {
   if (file.type === "application/pdf") {
-    // only import in the browser
     const { default: pdfToText } = await import("react-pdftotext");
     return await pdfToText(file);
   }
+  
+  if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    const mammoth = await import("mammoth");
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);

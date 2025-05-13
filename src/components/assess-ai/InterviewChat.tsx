@@ -57,6 +57,7 @@ export function InterviewChat({ questions, onComplete, isLoadingNextStep, jobDes
       
       if (result.shouldAskFollowUp && result.followUpQuestion) {
         setFollowUpQuestion(result.followUpQuestion);
+        startTimer(); // Add this line to start timer for follow-up
         toast({
           title: "Follow-up Question Generated",
           description: result.reasoning,
@@ -75,7 +76,7 @@ export function InterviewChat({ questions, onComplete, isLoadingNextStep, jobDes
     } finally {
       setIsProcessingFollowUp(false);
     }
-  }, [currentQuestionIndex, questions, jobDescription, cv, toast]);
+  }, [currentQuestionIndex, questions, jobDescription, cv, toast, startTimer]);
 
   const handleNextQuestion = useCallback(async () => {
     const responseTime = stopTimer();
@@ -96,7 +97,8 @@ export function InterviewChat({ questions, onComplete, isLoadingNextStep, jobDes
       // Move to the next question if we were on a follow-up
       if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-        resetTimer();
+        resetTimer(); // Reset before starting
+        startTimer();
       } else {
         await onComplete(updatedLog);
       }
@@ -120,16 +122,18 @@ export function InterviewChat({ questions, onComplete, isLoadingNextStep, jobDes
       setCurrentAnswer("");
       if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-        resetTimer();
+        resetTimer(); // Reset before starting
+        startTimer();
       } else {
         await onComplete(updatedLog);
       }
     } else {
       // If we're asking a follow-up, just clear the answer field but don't advance the question index
       setCurrentAnswer("");
-      resetTimer();
+      resetTimer(); // Reset before starting
+      startTimer();
     }
-  }, [currentAnswer, currentQuestion, currentQuestionIndex, followUpQuestion, interviewLog, onComplete, resetTimer, stopTimer, totalQuestions, checkForFollowUp]);
+  }, [currentAnswer, currentQuestion, currentQuestionIndex, followUpQuestion, interviewLog, onComplete, resetTimer, stopTimer, totalQuestions, checkForFollowUp, startTimer]);
 
   if (questions.length === 0) {
     return (

@@ -48,3 +48,9 @@ jobs:
 1. Add Logtail integration for error tracking
 2. Configure Vercel analytics
 3. Set up uptime monitoring
+
+## Vercel Deployment
+- Set environment variables:
+  - `OPENAI_API_KEY`: Obtain from OpenAI dashboard
+  - `NEXT_PUBLIC_UPLOAD_ENDPOINT`: `/api/upload`
+- Enable serverless functions in Vercel config
